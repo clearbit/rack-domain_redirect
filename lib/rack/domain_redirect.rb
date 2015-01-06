@@ -6,9 +6,10 @@ module Rack
   # domain from the list
   class DomainRedirect
     
-    def initialize(app, hosts = [])
-      @app = app
+    def initialize(app, hosts = [], options = {})
+      @app   = app
       @hosts = hosts
+      @code  = options[:code] || 301
     end
     
     def call(env)
@@ -22,7 +23,7 @@ module Rack
         url << "#{req.path}"
         url << "?#{req.query_string}" unless req.query_string.empty?
         res = Rack::Response.new
-        res.redirect(url)
+        res.redirect(url, @code)
         res.finish
       end
     end
