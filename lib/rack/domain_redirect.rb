@@ -6,9 +6,10 @@ module Rack
   class DomainRedirect
 
     def initialize(app, hosts = [], options = {})
-      @app   = app
-      @hosts = hosts
-      @code  = options[:code] || 301
+      @app      = app
+      @hosts    = hosts
+      @code     = options[:code] || 301
+      @protocol = options[:protocol] || 'http'
     end
 
     def call(env)
@@ -17,7 +18,7 @@ module Rack
       if @hosts.nil? or @hosts.empty? or @hosts.include?(req.host)
         @app.call(env)
       else
-        url = "http://#{@hosts[0]}"
+        url = "#{@protocol}://#{@hosts[0]}"
         url << "#{req.path}"
         url << "?#{req.query_string}" unless req.query_string.empty?
         res = Rack::Response.new
